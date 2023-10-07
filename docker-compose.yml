@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+  aws:
+    image: 'localstack/localstack'
+    container_name: 's3stack'
+    environment:
+      - SERVICES=kinesis,dynamodb,s3
+      - DEFAULT_REGION=us-west-2
+      - AWS_DEFAULT_REGION=us-west-2
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - AWS_ACCESS_KEY_ID=dummy
+      - AWS_SECRET_ACCESS_KEY=dummy
+    volumes:
+      - "${PWD}/init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"
+    ports:
+      - '4566:4566'
