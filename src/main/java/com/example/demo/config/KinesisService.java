@@ -12,6 +12,7 @@ import com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibC
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.Worker;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;
@@ -37,11 +38,13 @@ public class KinesisService {
     @Autowired
     private AmazonCloudWatch amazonCloudWatch;
 
-    @PostConstruct
-    public void setupKinesis() throws UnknownHostException {
+    @Value("${CONSUMER_NAME}")
+    private String consumerName;
+
+    public void startKinesis() throws UnknownHostException {
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials("dummy", "dummy");
         AWSCredentialsProvider awsStaticCredentialsProvider = new AWSStaticCredentialsProvider(awsCredentials);
-        String workerId = InetAddress.getLocalHost().getCanonicalHostName() + ":" + UUID.randomUUID();
+        String workerId = InetAddress.getLocalHost().getCanonicalHostName() + ":" + UUID.randomUUID() + ":" + consumerName;
 
         KinesisClientLibConfiguration kinesisClientLibConfiguration =
                 new KinesisClientLibConfiguration(SAMPLE_APPLICATION_NAME,
