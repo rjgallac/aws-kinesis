@@ -6,6 +6,7 @@ import com.amazonaws.services.kinesis.clientlibrary.exceptions.ThrottlingExcepti
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessor;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownReason;
+import com.amazonaws.services.kinesis.model.Record;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -13,7 +14,6 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.List;
-import com.amazonaws.services.kinesis.model.Record;
 public class AmazonKinesisApplicationSampleRecordProcessor implements IRecordProcessor {
 
     private static final Log LOG = LogFactory.getLog(AmazonKinesisApplicationSampleRecordProcessor.class);
@@ -103,11 +103,11 @@ public class AmazonKinesisApplicationSampleRecordProcessor implements IRecordPro
             // For this app, we interpret the payload as UTF-8 chars.
             data = decoder.decode(record.getData()).toString();
             // Assume this record came from AmazonKinesisSample and log its age.
-//            long recordCreateTime = new Long(data.substring("testData-".length()));
-//            long ageOfRecordInMillis = System.currentTimeMillis() - recordCreateTime;
-//
-//            LOG.info(record.getSequenceNumber() + ", " + record.getPartitionKey() + ", " + data + ", Created "
-//                    + ageOfRecordInMillis + " milliseconds ago.");
+            long recordCreateTime =  Long.parseLong(data.substring("testData-".length()));
+            long ageOfRecordInMillis = System.currentTimeMillis() - recordCreateTime;
+
+            LOG.info(record.getSequenceNumber() + ", " + record.getPartitionKey() + ", " + data + ", Created "
+                    + ageOfRecordInMillis + " milliseconds ago.");
         } catch (NumberFormatException e) {
             LOG.info("Record does not match sample record format. Ignoring record with data; " + data);
         } catch (CharacterCodingException e) {
