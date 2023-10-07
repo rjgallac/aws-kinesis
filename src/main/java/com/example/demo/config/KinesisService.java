@@ -38,7 +38,7 @@ public class KinesisService {
     @Autowired
     private AmazonCloudWatch amazonCloudWatch;
 
-    @Value("${CONSUMER_NAME}")
+    @Value("${consumer-name}")
     private String consumerName;
 
     public void startKinesis() throws UnknownHostException {
