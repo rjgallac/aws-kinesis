@@ -5,7 +5,7 @@ import com.amazonaws.services.kinesis.clientlibrary.exceptions.ShutdownException
 import com.amazonaws.services.kinesis.clientlibrary.exceptions.ThrottlingException;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessor;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
-import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownReason;
+import com.amazonaws.services.kinesis.clientlibrary.lib.worker.ShutdownReason;
 import com.amazonaws.services.kinesis.model.Record;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,6 +52,15 @@ public class AmazonKinesisApplicationSampleRecordProcessor implements IRecordPro
         if (System.currentTimeMillis() > nextCheckpointTimeInMillis) {
             checkpoint(checkpointer);
             nextCheckpointTimeInMillis = System.currentTimeMillis() + CHECKPOINT_INTERVAL_MILLIS;
+        }
+    }
+
+    @Override
+    public void shutdown(IRecordProcessorCheckpointer checkpointer, ShutdownReason reason) {
+        LOG.info("Shutting down record processor for shard: " + kinesisShardId);
+        // Important to checkpoint after reaching end of shard, so we can start processing data from child shards.
+        if (reason == ShutdownReason.TERMINATE) {
+            checkpoint(checkpointer);
         }
     }
 
@@ -112,18 +121,6 @@ public class AmazonKinesisApplicationSampleRecordProcessor implements IRecordPro
             LOG.info("Record does not match sample record format. Ignoring record with data; " + data);
         } catch (CharacterCodingException e) {
             LOG.error("Malformed data: " + data, e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void shutdown(IRecordProcessorCheckpointer checkpointer, ShutdownReason reason) {
-        LOG.info("Shutting down record processor for shard: " + kinesisShardId);
-        // Important to checkpoint after reaching end of shard, so we can start processing data from child shards.
-        if (reason == ShutdownReason.TERMINATE) {
-            checkpoint(checkpointer);
         }
     }
 

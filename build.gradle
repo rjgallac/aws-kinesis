@@ -29,7 +29,7 @@ dependencies {
 	implementation 'com.amazonaws:aws-java-sdk-dynamodb'
 	implementation 'com.amazonaws:aws-java-sdk-cloudwatch'
 
-	implementation 'com.amazonaws:amazon-kinesis-client:1.6.4'
+	implementation 'com.amazonaws:amazon-kinesis-client:1.14.10'
 
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
