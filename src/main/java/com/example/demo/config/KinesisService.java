@@ -8,6 +8,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorFactory;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.InitialPositionInStream;
+import com.amazonaws.services.kinesis.clientlibrary.lib.worker.InitialPositionInStreamExtended;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibConfiguration;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.Worker;
 import jakarta.annotation.PostConstruct;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -53,8 +55,13 @@ public class KinesisService {
                         awsStaticCredentialsProvider,
                         awsStaticCredentialsProvider,
                         workerId);
-        kinesisClientLibConfiguration.withInitialPositionInStream(SAMPLE_APPLICATION_INITIAL_POSITION_IN_STREAM);
-
+        if(consumerName.equals("consumer_2")) {
+            kinesisClientLibConfiguration.withTimestampAtInitialPositionInStream(new Date(System.currentTimeMillis() - 36000 * 1000));
+        }if(consumerName.equals("consumer_3")) {
+            kinesisClientLibConfiguration.withInitialPositionInStream(InitialPositionInStream.TRIM_HORIZON);
+        } else {
+            kinesisClientLibConfiguration.withInitialPositionInStream(SAMPLE_APPLICATION_INITIAL_POSITION_IN_STREAM);
+        }
         IRecordProcessorFactory recordProcessorFactory = new AmazonKinesisApplicationRecordProcessorFactory();
 
         Worker worker = new Worker(recordProcessorFactory, kinesisClientLibConfiguration, amazonKinesis, amazonDynamoDB, amazonCloudWatch);

@@ -4,6 +4,7 @@ docker exec -it s3stack sh
 
 awslocal dynamodb list-tables
 
+awslocal dynamodb delete-table --table-name test-app
 
 awslocal kinesis create-stream --stream-name test-stream --shard-count 3
 
